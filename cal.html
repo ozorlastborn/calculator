@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+	@import url('https://fonts.googleapis.com/css2?family=Parisienne&display=swap');
+
+*, *::before, *::after{
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-weight: normal;
+    font-size: 10px;
+}
+
+body{
+    padding:0;
+    margin: 0;
+    background: grey;
+    /*background: rgba(255, 192, 203, 0.7);*/
+  }
+
+h4{
+    color: #fff;
+    font-size: 50px;
+    text-align: center;
+    font-family: 'Parisienne', cursive;
+    font-weight: bold;
+    text-shadow: -2px -2px 10px black;
+}
+
+.layout{
+	margin: auto;
+	width: 350px;
+	height: 540px;
+	position: relative;
+	background: black;
+	border-radius: 80px;
+   justify-content: center;
+	box-shadow: 2px 2px 15px rgb(248, 147, 165);
+}
+
+.calculator{
+    height: 500px;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(4, 70px);
+    grid-template-rows: minmax(100px, auto) repeat(5, 70px);
+}
+
+.calculator > button{
+    margin: 6px;
+    color: #fff;
+    font-size: 2rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.span-two{
+    grid-column: span 2;
+    height: 90%;
+    width: 95%;
+    border-radius: 5em;
+}
+
+button{
+    border-radius: 90% 50%;
+    border: none;
+	 background: linear-gradient(315deg, gray, grey);
+	 box-shadow: 2px 2px 6px #f58787;
+}
+
+button:active{
+	background: linear-gradient(315deg, black, violet);
+}
+
+.output{
+    grid-column: 1/ -1;
+    box-shadow : inset -2px -2px 10px purple;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+	 flex-direction:column;
+	 padding: 0px 20px;
+	 word-wrap: break-word;
+	 word-break: break-all;
+    border-radius: 50px;
+    margin: 35px 0 30px 0;
+}
+.output .previous {
+  /*color: blue;*/
+	color: rgb(255, 255, 255, .7);
+	font-size: 20px;
+   margin-top:10px;
+}
+
+.output .current {
+	color: skyblue;
+	font-size: 25px;
+   margin: 5px 0;
+}
+
+
+footer{
+	position: relative;
+	margin: 20px 0;
+	top: 10vh;
+	height: 50px;
+	width: 100%;
+	text-align: center;
+  background: black;
+	color: #fff;
+   font-size: 32px;
+	font-weight: bold;
+	text-shadow: 2px 2px 5px #fc737c;
+	font-family: 'Parisienne', cursive;
+}
+a{
+	color: #fff;
+   font-size: 35px;
+	font-weight: bold;
+	text-decoration:none;
+   font-family: 'Parisienne', cursive;
+	text-shadow: 2px 2px 5px #fc737c;
+}
+
+
+
+
+	</style>
+</head>
+<body>
+	<h4> My Simple Calculator &copy;</h4>
+	 <div class="layout"> 
+    <div class="calculator">
+        <div class="output">
+            <div data-previous class="previous"></div>
+            <div data-current class="current"></div>
+        </div>
+        <button data-clear class="span-two">Remove</button>
+        <button data-delete>Del</button>
+        <button data-operation>÷</button>
+        <button data-number>1</button>
+        <button data-number>2</button>
+        <button data-number>3</button>
+        <button data-operation>*</button>
+        <button data-number>4</button>
+        <button data-number>5</button>
+        <button data-number>6</button>
+        <button data-operation>+</button>
+        <button data-number>7</button>
+        <button data-number>8</button>
+        <button data-number>9</button>
+        <button data-operation>-</button>
+        <button data-number>.</button>
+        <button data-number>0</button>
+        <button data-equals class="span-two">Ans</button>
+    </div>
+	</div>
+  <footer>
+    <h3>&copy Ugochukwu Ozor  2021</h3>
+  </footer>
+    <script type="text/javascript">
+    	class Calculator{
+	constructor(previousTextElement, currentTextElement) {
+		this.previousTextElement = previousTextElement
+		this.currentTextElement = currentTextElement
+		this.clear()
+	}
+	
+	clear(){
+			this.current = ''
+			this.previous = ''
+			this.operation = undefined
+	}
+	
+	delete(){
+			this.current = this.current.toString().slice(0, -1)
+	}
+	
+	appendNumber(number) {  
+	    if (number === '.' && this.current.includes('.')) return;
+        this.current = this.current.toString() + number.toString()
+  }
+	
+ chooseOperation(operation) {
+    if (this.current === '') return
+    if (this.previous !== '') {
+      this.compute()
+    }
+
+    this.operation = operation
+    this.previous = this.current
+    this.current = ''
+  }
+	
+compute() {
+    let computation
+    const prev = parseFloat(this.previous)
+    const current = parseFloat(this.current)
+    if (isNaN(prev) || isNaN(current)) return
+    
+    switch (this.operation) {
+      case '+':
+        computation = prev + current
+        break
+      case '-':
+        computation = prev - current
+        break
+      case '*':
+        computation = prev * current
+        break
+      case '÷':
+        computation = prev / current
+        break
+      default:
+        return
+    }
+    this.current = computation.toString()
+    this.operation = undefined
+    this.previous = ''
+  }
+	
+getDisplayNumber(number) {
+	
+	let str = ''
+	const arr = number.split('.')
+	
+	for(let i in arr[0]){
+		if(Number(i) !== 0 && i%3 === 0) str += ','
+		str += arr[0][i]
+	}
+	
+	if(number.endsWith('.')) str += '.'
+	if(arr[1]) str += '.'+arr[1]
+	
+	return str
+}
+	
+updateDisplay() {
+    this.currentTextElement.innerText =
+      this.getDisplayNumber(this.current)
+    if (this.operation) {
+      this.previousTextElement.innerText =
+        `${this.getDisplayNumber(this.previous)} ${this.operation}`
+    } else {
+      this.previousTextElement.innerText = ''
+    }
+  }
+}
+
+const numberButtons = document.querySelectorAll('[data-number]')
+const operationButtons = document.querySelectorAll('[data-operation]')
+
+const equalsButton = document.querySelector('[data-equals]')
+const deleteButton = document.querySelector('[data-delete]')
+const clearButton = document.querySelector('[data-clear]')
+
+const previousTextElement = document.querySelector('[data-previous]')
+const currentTextElement = document.querySelector('[data-current]')
+
+
+
+const calculator = new Calculator(previousTextElement, currentTextElement)
+
+
+numberButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    calculator.appendNumber(button.innerText)
+    calculator.updateDisplay()
+  })
+})
+
+operationButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    calculator.chooseOperation(button.innerText)
+    calculator.updateDisplay()
+  })
+})
+
+equalsButton.addEventListener('click', button => {
+  calculator.compute()
+  calculator.updateDisplay()
+})
+
+clearButton.addEventListener('click', button => {
+  calculator.clear()
+  calculator.updateDisplay()
+})
+
+deleteButton.addEventListener('click', button => {
+  calculator.delete()
+  calculator.updateDisplay()
+})
+    </script>
+</body>
+</html>
